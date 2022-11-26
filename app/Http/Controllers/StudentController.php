@@ -3,10 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use App\Http\Requests\StudentCreateRequest;
+use App\Services\StudentService;
+
 
 class StudentController extends Controller
 {
+    /**
+     * Service for the controller.
+     *
+     * @var StudentService
+     */
+    protected $service;
+
+    /**
+     * UserController constructor.
+     *
+     * @param StudentService $service
+     */
+    public function __construct(StudentService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +34,8 @@ class StudentController extends Controller
      */
     public function index()
     {
-        return view('students.index');
+        $students = Student::with('subjects')->get();
+        return view('students.index')->with([ 'students' => $students ]);
     }
 
     /**
@@ -24,18 +45,23 @@ class StudentController extends Controller
      */
     public function create()
     {
-        //
+        return view('students.create');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\StudentCreateRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StudentCreateRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $studentName = $validated['name'];
+        $student = $this->service->create($validated);
+        $subject = $this->service->subjectCreate($request->all(), $student->id);
+        $message = sprintf('The Student "%s" has been created successfully', $studentName);
+        return redirect(route('student.index'))->with('success', $message);
     }
 
     /**
@@ -57,7 +83,7 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        //
+        return view('students.edit', ['student' => $student, 'subjects' => $student->subjects]);
     }
 
     /**
@@ -67,11 +93,17 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Student $student)
+    public function update(StudentCreateRequest $request, Student $student)
     {
-        //
+        $validated = $request->validated();
+        $student_id = $student->id;
+        $studentName = $validated['name'];
+        $student = $this->service->update($student, $validated);
+        $subject = $this->service->subjectEdit($request->all(), $student_id);
+        $message = sprintf('The Student "%s" has been updated successfully', $studentName);
+        return redirect(route('student.index'))->with('success', $message);
     }
-
+    
     /**
      * Remove the specified resource from storage.
      *
@@ -80,6 +112,8 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        //
+        $student->delete();
+        $message = sprintf('The Student "%s" has been deleted successfully', $student->name);
+        return redirect(route('student.index'))->with('success', $message);
     }
 }

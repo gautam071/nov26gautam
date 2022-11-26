@@ -18,7 +18,7 @@ class CreateSubjectsTable extends Migration
             $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->string('name');
-            $table->string('marks scored');
+            $table->string('marks');
             $table->string('grade');
             $table->timestamps();
         });
