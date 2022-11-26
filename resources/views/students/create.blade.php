@@ -47,8 +47,9 @@
                     <label for="status">{{ __(('Status*')) }}</label>
                     <select name="status" required id="status" class="form-control select2-single" required>
                         <option value="">Select a Status*</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">In Active</option>
+                        @foreach(config('constants.status') as $key => $subjectName)
+                            <option value="{{ $key }}">{{ $subjectName }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
