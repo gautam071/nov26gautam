@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 use App\Http\Requests\StudentCreateRequest;
 use App\Services\StudentService;
 
@@ -72,7 +72,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        return view('students.show', ['student' => $student, 'subjects' => $student->subjects]);
     }
 
     /**
@@ -115,5 +115,12 @@ class StudentController extends Controller
         $student->delete();
         $message = sprintf('The Student "%s" has been deleted successfully', $student->name);
         return redirect(route('student.index'))->with('success', $message);
+    }
+
+    public function changeStatus(Request $request) {
+        $user = Student::find($request->student_id);
+        $user->status = $request->status;
+        $user->save();
+        return response()->json(['success' => 'Status Changed Successfully']);
     }
 }
