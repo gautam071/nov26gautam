@@ -26,7 +26,6 @@
                 <th scope="col">City</th>
                 <th scope="col">State</th>
                 <th scope="col">Country</th>
-                <th scope="col">Status</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -41,7 +40,6 @@
                 <td>{{ $student->city ?? '-' }}</td>
                 <td>{{ $student->state ?? '-' }}</td>
                 <td>{{ $student->country ?? '-' }}</td>
-                <td class="text-capitalize">{{ $student->status }}</td>
                 <td>
                     <div class="d-flex gap-3">
                         <a href="{{ route('student.edit', $student->id) }}">
